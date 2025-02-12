@@ -16,32 +16,35 @@ def recommend(ec2_type, cpu):
         status = "Overutilized"
         new_size = sizes[index + 1] if index < len(sizes) - 1 else size
     
-    new_ec2 = f"{family}.{new_size}"
+    new_ec2 = family + '.' + new_size
     return status, new_ec2
 
 def width(data):
-    return [max(len(str(row[i])) for row in data) + 2 for i in range(len(data[0]))]
+    col_widths = []
+    for i in range(len(data[0])):
+        max_length = max(len(str(row[i])) for row in data)
+        col_widths.append(max_length + 2)
+    return col_widths
 
 def table(data):
     col_widths = width(data)
-    border = '+' + '+'.join('-' * width for width in col_widths) + '+'
+    border = '+'
+    for w in col_widths:
+        border += '-' * w + '+'
     
     print(border)
     for i, row in enumerate(data):
-        
         row_str = '|'
 
         for j in range(len(row)):
             cell = row[j]
             col_width = col_widths[j]
-            formatted_cell = f'{cell:<{col_width}}'
-            row_str += formatted_cell + '|'
+            row_str += cell.ljust(col_width) + '|'
 
         print(row_str)
-    
+
         if i == 0:
             print(border)
-
     print(border)
 
 ec2 = "t2.large"
@@ -50,6 +53,6 @@ cpu = 90
 status, rec_ec2 = recommend(ec2, cpu)
 rows = [
     ["No.", "Current EC2", "CPU", "Status", "Recommended EC2"],
-    ["1", ec2, f"{cpu}%", status, rec_ec2]
+    ["1", ec2, str(cpu) + "%", status, rec_ec2]
 ]
 table(rows)
