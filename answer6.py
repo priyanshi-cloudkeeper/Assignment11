@@ -3,32 +3,44 @@ def read_csv(file_path):
         lines = file.readlines()
     return [line.strip().split(',') for line in lines]
 
-def calculate_column_widths(data):
-    num_columns = len(data[0])
-    column_widths = [0] * num_columns
+def width(data):
+    col = len(data[0])
+    col_width = [0] * col
 
-    for col in range(num_columns):
-        max_width = 0
+    for col in range(col):
+        maxi = 0
         for row in data:
-            cell_length = len(row[col])
-            if cell_length > max_width:
-                max_width = cell_length
-        column_widths[col] = max_width
-    return column_widths
+            length = len(row[col])
+            if length > maxi:
+                maxi = length
+        col_width[col] = maxi
+    return col_width
 
 
-def print_table(data):
-    col_widths = calculate_column_widths(data)
-    border = '+' + '+'.join('-' * (width +2) for width in col_widths) + '+'
+def table(data):
+    col_widths = width(data)
+    border = '+' + '+'.join('-' * (width) for width in col_widths) + '+'
     
     print(border)
     for i, row in enumerate(data):
-        row_str = '| ' + ' | '.join(f'{row[j]:<{col_widths[j]}}' for j in range(len(row))) + ' |'
-        print(row_str)
-        print(border if i == 0 else '')  
+        
+        row_str = '|'
+
+        for j in range(len(row)):
     
-    print(border)
+            cell_value = row[j]
+            
+            column_width = col_widths[j]
+            
+            formatted_cell = f'{cell_value:<{column_width}}'
+            
+            row_str += formatted_cell + '|'
+
+        print(row_str)
+    
+        if i == 0:
+            print(border)
 
 csv_file_path = "data.csv" 
 data = read_csv("/home/priyanshi/Documents/data.csv")
-print_table(data)
+table(data)
